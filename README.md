@@ -28,6 +28,26 @@ All variables are declared in the Railway service's **Variables** panel (or in t
 
 When wiring an external Railway-managed data store (e.g. Postgres) into `ctx.yaml`, reference it via the **private** network — `${{ Postgres.RAILWAY_PRIVATE_DOMAIN }}` — so traffic stays off the public internet.
 
+## Customize
+
+The configs are baked into the image at build time, so customizing the template means forking this repo and editing three files:
+
+1. Fork this repo (GitHub → Fork) into your own account or org.
+2. Edit:
+   - **`ctx.yaml`** — register your own data sources (Postgres, MySQL, S3, …). For Railway-managed stores, reference them via the private network: `${{ <Service>.RAILWAY_PRIVATE_DOMAIN }}`.
+   - **`pipelines/`** — one YAML file per endpoint (`kind: pipeline`, `spec.query` is the SQL with `{param}` placeholders). Each file is automatically exposed as `POST /<metadata.name>/execute`. See the [pipeline reference](https://github.com/SkardiLabs/skardi/blob/main/docs/pipelines.md).
+   - **`seed.sql`** — only if you're keeping the bundled SQLite source and need different starter data.
+3. On Railway, deploy from **your fork** (New Project → Deploy from GitHub repo). The same `Dockerfile` and `railway.json` will work unchanged.
+
+Pull future upstream updates into your fork:
+
+```bash
+git remote add upstream https://github.com/SkardiLabs/skardi-railway.git
+git pull upstream main
+```
+
+If you don't need a SQLite seed at all (e.g. your `ctx.yaml` only references a Railway-managed Postgres), delete `seed.sql`, the `seed` build stage in `Dockerfile`, and the seed-copy block in `entrypoint.sh` — the volume mount becomes optional too.
+
 ## Notes
 
 - Source repo: <https://github.com/SkardiLabs/skardi>
