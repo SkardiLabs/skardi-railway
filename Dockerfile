@@ -1,4 +1,4 @@
-# Railway template image for Skardi v0.3.0.
+# Railway template image for Skardi v0.4.0.
 #
 # Build stage: bake an initial SQLite database from seed.sql so the deployed
 # service starts with working sample data without requiring sqlite3 at runtime.
@@ -9,7 +9,7 @@ WORKDIR /seed
 COPY seed.sql .
 RUN sqlite3 /seed/backend.db < seed.sql
 
-FROM ghcr.io/skardilabs/skardi/skardi-server:0.3.0
+FROM ghcr.io/skardilabs/skardi/skardi-server:0.4.0
 
 WORKDIR /app
 
